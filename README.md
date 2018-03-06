@@ -11,10 +11,11 @@
 ### Node.js Stack
 
 - Express server
-
+- webpack-dev-server
 
 ### React Stack
 - antd
+- axios
 
 ## Getting started
 
