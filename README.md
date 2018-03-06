@@ -4,15 +4,17 @@
 
 * Node.js
 * React
+* Webpack
+* Eslint
+* TravisCI
 
 ### Node.js Stack
 
 - Express server
-- Forever
-- Nodemon
+
 
 ### React Stack
-
+- antd
 
 ## Getting started
 
@@ -30,5 +32,21 @@ $ mkdir logs && cd logs && touch err.log & touch forever.log & touch out.log
 
 3. Serve the app
 ```bash
-$ node ./bin/www
+$ npm start
+```
+### Frontend set up
+1. Install all frontend dependencies
+```bash
+$ cd frontend && npm install
+```
+
+2. Serve the app
+ 
+```
+$ npm start
+```
+2.1 dev serve
+
+```
+$ npm run dev
 ```

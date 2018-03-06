@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "webpack & node ./bin/www",
-    "test": "webpack",
-    "dev": "webpack && webpack-dev-server"
+    "build": "webpack",
+    "dev": "webpack-dev-server"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
