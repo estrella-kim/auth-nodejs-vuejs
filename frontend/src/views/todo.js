@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './todo.css';
-import './'
-import { Checkbox, Icon, Input} from 'antd';
+import { Checkbox, Icon, Input } from 'antd';
 import 'antd/dist/antd.css';
 import axios from 'axios';
 const $http = axios;
@@ -85,7 +84,7 @@ export class Todo extends React.Component{
             filterType : filterType
         })
         if(filterType === 'todo'){
-            this.lists.forEach(function(value, index){
+            this.lists.forEach(function(value){
                 if(value.status === 0) {
                     arr.push(value);
                 }
@@ -94,7 +93,7 @@ export class Todo extends React.Component{
                 lists : arr
             })
         }else if(filterType === 'done') {
-            this.lists.forEach(function(value, index){
+            this.lists.forEach(function(value){
                 if(value.status === 1) {
                     arr.push(value);
                 }
@@ -133,6 +132,7 @@ export class Todo extends React.Component{
                 _this.setState({
                     lists : _this.lists
                 })
+                _this.filterLists();
             })
             .catch(function(error){
                 console.log(error);
