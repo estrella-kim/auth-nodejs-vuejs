@@ -1,11 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './todo.css';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
 import { TodoList } from '../components';
 import { Checkbox, Icon, Input } from 'antd';
 import 'antd/dist/antd.css';
 import axios from 'axios';
+import './todo.css';
+
+
 const $http = axios;
+const store = createStore(TodoList);
 
 export class Todo extends React.Component{
     constructor (nextState) {
@@ -171,34 +176,36 @@ export class Todo extends React.Component{
     }
     render () {
         return (
-            <div className="wrap">
-                <div className="wrap__todo-wrap">
-                    <div className="write-list">
-                        <form onSubmit={ (e) => this.registerList(e)}>
-                            <Input type="text" onChange={(e) => this.getText(e) } value={this.state.text}/>
-                            <Icon type="edit" onClick={ (e) => this.registerList(e) }/>
-                        </form>
-                    </div>
-                    <ul className="filter-wrap">
-                        <li><label><input type="radio" name="todo-list" value="all" defaultChecked ={ this.state.filterType} onChange={(e) => this.filterLists(e)}/>all</label></li>
-                        <li><label><input type="radio" name="todo-list" value="todo" onChange={(e) => this.filterLists(e)}/>todo</label></li>
-                        <li><label><input type="radio" name="todo-list" value="done" onChange={(e) => this.filterLists(e)}/>done</label></li>
-                    </ul>
-                    <div className="lists-wrap">
-                        <ul>
-                            { this.state.lists.map((v, i) => (
-                                <TodoList>
-                                <li key={i}>
-                                    <Checkbox checked={v.status} onChange={ () => this.changeStatus(v, i) }></Checkbox>
-                                    { v.editValue ? (<form className="edit-wrap" onSubmit={(e) => this.registerEdited(e, v)}><Input value={v.text} size="small" onBlur={ () => this.edit(i) } onChange={(e) => this.editText(e, i)} /></form>)
-                                        : (<span onDoubleClick={ () => this.edit(i)}>{v.index}{v.text}</span>) }
-                                    <Icon type="close" onClick={ () => this.delete(v, i)}/>
-                                </li>)
-                            )}
+            <Provider store = {store} >
+                <div className="wrap">
+                    <div className="wrap__todo-wrap">
+                        <div className="write-list">
+                            <form onSubmit={ (e) => this.registerList(e)}>
+                                <Input type="text" onChange={(e) => this.getText(e) } value={this.state.text}/>
+                                <Icon type="edit" onClick={ (e) => this.registerList(e) }/>
+                            </form>
+                        </div>
+                        <ul className="filter-wrap">
+                            <li><label><input type="radio" name="todo-list" value="all" defaultChecked ={ this.state.filterType} onChange={(e) => this.filterLists(e)}/>all</label></li>
+                            <li><label><input type="radio" name="todo-list" value="todo" onChange={(e) => this.filterLists(e)}/>todo</label></li>
+                            <li><label><input type="radio" name="todo-list" value="done" onChange={(e) => this.filterLists(e)}/>done</label></li>
                         </ul>
+                        <div className="lists-wrap">
+                            <ul>
+                                { this.state.lists.map((v, i) => (
+                                    <TodoList>
+                                    <li key={i}>
+                                        <Checkbox checked={v.status} onChange={ () => this.changeStatus(v, i) }></Checkbox>
+                                        { v.editValue ? (<form className="edit-wrap" onSubmit={(e) => this.registerEdited(e, v)}><Input value={v.text} size="small" onBlur={ () => this.edit(i) } onChange={(e) => this.editText(e, i)} /></form>)
+                                            : (<span onDoubleClick={ () => this.edit(i)}>{v.index}{v.text}</span>) }
+                                        <Icon type="close" onClick={ () => this.delete(v, i)}/>
+                                    </li>)
+                                )}
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </Provider>
         )
     }
 }
