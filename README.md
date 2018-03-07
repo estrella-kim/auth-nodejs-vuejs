@@ -7,6 +7,7 @@
 * Webpack
 * Eslint
 * TravisCI
+* MySQL
 
 ### Node.js Stack
 
@@ -14,6 +15,8 @@
 - webpack-dev-server
 
 ### React Stack
+- react-redux
+- react-thunk
 - antd
 - axios
 
