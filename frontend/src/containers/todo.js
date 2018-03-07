@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './todo.css';
+import { TodoList } from '../components';
 import { Checkbox, Icon, Input } from 'antd';
 import 'antd/dist/antd.css';
 import axios from 'axios';
@@ -186,6 +187,7 @@ export class Todo extends React.Component{
                     <div className="lists-wrap">
                         <ul>
                             { this.state.lists.map((v, i) => (
+                                <TodoList>
                                 <li key={i}>
                                     <Checkbox checked={v.status} onChange={ () => this.changeStatus(v, i) }></Checkbox>
                                     { v.editValue ? (<form className="edit-wrap" onSubmit={(e) => this.registerEdited(e, v)}><Input value={v.text} size="small" onBlur={ () => this.edit(i) } onChange={(e) => this.editText(e, i)} /></form>)

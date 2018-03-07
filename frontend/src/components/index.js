@@ -1,2 +1,6 @@
-export { default as Button } from './button';
+export { default as Header } from './Header';
+export { default as Footer } from './Footer';
+export { default as Button } from './Button';
 export { default as EditInput } from './EditInput';
+export { default as TodoList } from './TodoList';
+
