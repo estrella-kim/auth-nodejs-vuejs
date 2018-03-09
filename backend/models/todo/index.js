@@ -8,6 +8,9 @@ const authModel = {
     getLists : function(callback) {
         return connection.query('select * from todos', callback);
     },
+    getListsByIndex : function( req, callback) {
+        return connection.query('SELECT *  FROM todos WHERE `index`=?', req, callback);
+    },
     insertLists : function(req, callback) {
         let arr = [ req.text, req.status];
         return connection.query( 'insert into todos(todo, isDone) values(?,?)', arr, callback);

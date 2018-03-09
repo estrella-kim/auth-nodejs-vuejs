@@ -10,10 +10,9 @@
 * MySQL
 
 ### Node.js Stack
-
 - Express server
 - webpack-dev-server
-
+- nodemon
 ### React Stack
 - react-redux
 - react-thunk
