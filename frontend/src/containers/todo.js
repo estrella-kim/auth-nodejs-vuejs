@@ -1,16 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+//import { Provider } from 'react-redux';
+//import { createStore } from 'redux';
+import { fetchTodoLists, registerTodoLists, deleteTodoLists, updateTodoLists } from '../api';
+import axios from 'axios';
 import { TodoList } from '../components';
 import { Checkbox, Icon, Input } from 'antd';
 import 'antd/dist/antd.css';
-import axios from 'axios';
 import './todo.css';
 
 
 const $http = axios;
-const store = createStore(TodoList);
+//const store = createStore(TodoList);
 
 export class Todo extends React.Component{
     constructor (nextState) {
@@ -25,23 +26,19 @@ export class Todo extends React.Component{
     componentDidMount () {
         let getLists = () => {
             let _this = this;
-            $http.get('http://localhost:8000/todo')
-                .then(function (res) {
-                    res.data.forEach(function (value, index) {
-                        const list = {
-                            index : value.index,
-                            text : value.todo,
-                            status : value.isDone
-                        }
-                        _this.lists.push(list);
-                    })
-                    _this.setState({
-                        lists : _this.lists
-                    })
+            fetchTodoLists(function (res) {
+                res.data.response.forEach(function (value, index) {
+                    const list = {
+                        index : value.index,
+                        text : value.todo,
+                        status : value.isDone
+                    }
+                    _this.lists.push(list);
+                });
+                _this.setState({
+                    lists : _this.lists
                 })
-                .catch(function(error) {
-                    console.log(error);
-                })
+            })
         }
         getLists();
     }
@@ -64,18 +61,17 @@ export class Todo extends React.Component{
             editValue : false
         }
         this.lists.push(obj);
-        $http.post('http://localhost:8000/todo', obj)
-            .then(function(res){
-                console.log(res);
-                _this.setState({
-                    text : ''
-                })
-                if(_this.state.filterType !== 'done') {
-                    _this.setState({
-                        lists : _this.lists
-                    })
-                }
+        registerTodoLists(obj, function(res){
+            console.log(res);
+            _this.setState({
+                text : ''
             })
+            if(_this.state.filterType !== 'done') {
+                _this.setState({
+                    lists : _this.lists
+                })
+            }
+        });
     }
     filterLists (e) {
         var filterType = '';
@@ -100,6 +96,7 @@ export class Todo extends React.Component{
             })
         }else if(filterType === 'done') {
             this.lists.forEach(function(value){
+                console.log(value);
                 if(value.status === 1) {
                     arr.push(value);
                 }
@@ -121,29 +118,24 @@ export class Todo extends React.Component{
         arr[index].status = list.status;
         this.setState({
             lists : arr
-        })
-        $http.put('http://localhost:8000/todo', { status : list.status, index : list.index } )
-            .then(function(res){
-                console.log(res);
-            })
+        });
+        updateTodoLists( { status : list.status, index : list.index }, function(res){
+            console.log(res);
+        });
         this.filterLists();
     }
 
     delete (list, index) {
         const _this = this;
         delete this.lists[index];
-        $http.delete('http://localhost:8000/todo', {params: {index: list.index}})
-            .then(function(res){
-                console.log(res);
-                _this.setState({
-                    lists : _this.lists
-                })
-                _this.filterLists();
+        console.log(list.index);
+        deleteTodoLists( {params: {index: list.index}}, function(res){
+            console.log(res);
+            _this.setState({
+                lists : _this.lists
             })
-            .catch(function(error){
-                console.log(error);
-            })
-
+            _this.filterLists();
+        });
     }
     edit(index) {
         this.lists[index].editValue = !this.lists[index].editValue;
@@ -160,23 +152,18 @@ export class Todo extends React.Component{
     registerEdited(event, list) {
         const _this = this;
         event.preventDefault();
-        $http.put('http://localhost:8000/todo', { index : list.index, text : list.text })
-            .then(function(res){
-                console.log(res);
-                list.editValue = false;
-                if(_this.filterType !== 'done') {
-                    _this.setState({
-                        lists: _this.lists
-                    })
-                }
-            })
-            .catch(function(error) {
-                console.log(error);
-            })
+        updateTodoLists( { index : list.index, text : list.text }, function(res){
+            console.log(res);
+            list.editValue = false;
+            if(_this.filterType !== 'done') {
+                _this.setState({
+                    lists: _this.lists
+                })
+            }
+        });
     }
     render () {
         return (
-            <Provider store = {store} >
                 <div className="wrap">
                     <div className="wrap__todo-wrap">
                         <div className="write-list">
@@ -193,7 +180,6 @@ export class Todo extends React.Component{
                         <div className="lists-wrap">
                             <ul>
                                 { this.state.lists.map((v, i) => (
-                                    <TodoList>
                                     <li key={i}>
                                         <Checkbox checked={v.status} onChange={ () => this.changeStatus(v, i) }></Checkbox>
                                         { v.editValue ? (<form className="edit-wrap" onSubmit={(e) => this.registerEdited(e, v)}><Input value={v.text} size="small" onBlur={ () => this.edit(i) } onChange={(e) => this.editText(e, i)} /></form>)
@@ -205,7 +191,6 @@ export class Todo extends React.Component{
                         </div>
                     </div>
                 </div>
-            </Provider>
         )
     }
 }

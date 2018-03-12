@@ -1,4 +1,4 @@
-import axios from 'axios';
-const STATIC_API = 'http://localhost:8000';
-
-export {default as fetchTodoLists } from './fetchTodoLists.js';
+export { default as fetchTodoLists } from './fetchTodoLists';
+export { default as updateTodoLists } from './updateTodoLists';
+export { default as deleteTodoLists } from './deleteTodoLists';
+export { default as registerTodoLists } from './registerTodoLists';

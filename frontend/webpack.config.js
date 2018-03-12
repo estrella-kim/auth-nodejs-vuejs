@@ -2,8 +2,8 @@ const path = require('path');
 
 module.exports  = {
     entry : {
-        index : './src/views/index',
-        todo : './src/views/todo'
+        index : './src/containers/index',
+        todo : './src/containers/todo'
     },
     output : {
         filename :'[name].bundle.js',
