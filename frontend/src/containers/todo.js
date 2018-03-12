@@ -11,10 +11,9 @@ import './todo.css';
 
 
 const $http = axios;
-//const store = createStore(TodoList);
 
 export class Todo extends React.Component{
-    constructor (nextState) {
+    constructor () {
         super();
         this.lists = [];
         this.state = {
@@ -24,87 +23,75 @@ export class Todo extends React.Component{
         }
     }
     componentDidMount () {
-        let getLists = () => {
-            let _this = this;
-            fetchTodoLists(function (res) {
-                res.data.response.forEach(function (value, index) {
-                    const list = {
-                        index : value.index,
-                        text : value.todo,
-                        status : value.isDone
-                    }
-                    _this.lists.push(list);
-                });
-                _this.setState({
-                    lists : _this.lists
-                })
-            })
-        }
-        getLists();
+        this.getLists();
     }
-   /* shouldComponentUpdate (nextState) {
-            for(let i = 0; i < this.state.lists.length; i++ ) {
-                return (
-					nextState.lists[i].status !== this.state.lists[i].status
-                )
-            };
-    }*/
+    getLists () {
+        let _this = this;
+        fetchTodoLists(function (res) {
+            let arr = [];
+            res.data.response.forEach(function (value, index) {
+                const list = {
+                    index : value.index,
+                    text : value.todo,
+                    status : value.isDone
+                }
+                arr.push(list);
+            });
+            _this.lists = arr;
+            _this.setState({
+                lists : _this.lists
+            })
+        })
+    }
     registerList (e) {
         const _this = this;
 
         if(e) {
             e.preventDefault();
         }
-        const obj = {
+        const param = {
             text : this.state.text,
             status : 0,
             editValue : false
-        }
-        this.lists.push(obj);
-        registerTodoLists(obj, function(res){
+        };
+        registerTodoLists(param, function(res){
             console.log(res);
+            /*_this.lists.push(param);*/
             _this.setState({
                 text : ''
-            })
-            if(_this.state.filterType !== 'done') {
-                _this.setState({
-                    lists : _this.lists
-                })
-            }
+            });
+            _this.getLists();
         });
     }
-    filterLists (e) {
-        var filterType = '';
-        if(e) {
-			filterType = e.target.value;
-        }else{
-			filterType = this.state.filterType
-        }
+    selectFilter (e) {
+        this.state.filterType = e.target.value;
+        this.doFilter();
+    }
+    updateState (filterType) {
         const arr = [];
+        this.lists.forEach(function(value){
+            if(value.status === filterType) {
+                arr.push(value);
+            }
+        })
+        this.setState({
+            lists : arr
+        })
+    }
+    doFilter () {
+        let filterType = this.state.filterType;
         this.setState({
             lists : this.lists,
             filterType : filterType
-        })
-        if(filterType === 'todo'){
-            this.lists.forEach(function(value){
-                if(value.status === 0) {
-                    arr.push(value);
-                }
-            })
-            this.setState({
-                lists : arr
-            })
-        }else if(filterType === 'done') {
-            this.lists.forEach(function(value){
-                console.log(value);
-                if(value.status === 1) {
-                    arr.push(value);
-                }
-            })
-            this.setState({
-                lists : arr
-            })
-        }
+        });
+        switch(filterType) {
+            case 'todo' :
+                this.updateState(0);
+                break;
+            case 'done' :
+                this.updateState(1);
+                break;
+        };
     }
     getText (e) {
         const text = e.target.value;
@@ -113,28 +100,33 @@ export class Todo extends React.Component{
         })
     }
     changeStatus (list, index) {
+        const param = { index : list.index };
         let arr = this.state.lists;
         list.status = list.status === 1 ? 0 : 1;
+        param.status = list.status;
         arr[index].status = list.status;
-        this.setState({
-            lists : arr
-        });
-        updateTodoLists( { status : list.status, index : list.index }, function(res){
+
+        updateTodoLists( param, function(res){
             console.log(res);
+            this.setState({
+                lists : arr
+            });
         });
-        this.filterLists();
+
+        this.doFilter();
     }
 
     delete (list, index) {
         const _this = this;
-        delete this.lists[index];
+        this.lists.splice(index, 1);
         console.log(list.index);
+        console.log( this.lists);
         deleteTodoLists( {params: {index: list.index}}, function(res){
             console.log(res);
             _this.setState({
                 lists : _this.lists
-            })
-            _this.filterLists();
+            });
+            _this.doFilter();
         });
     }
     edit(index) {
@@ -173,9 +165,9 @@ export class Todo extends React.Component{
                             </form>
                         </div>
                         <ul className="filter-wrap">
-                            <li><label><input type="radio" name="todo-list" value="all" defaultChecked ={ this.state.filterType} onChange={(e) => this.filterLists(e)}/>all</label></li>
-                            <li><label><input type="radio" name="todo-list" value="todo" onChange={(e) => this.filterLists(e)}/>todo</label></li>
-                            <li><label><input type="radio" name="todo-list" value="done" onChange={(e) => this.filterLists(e)}/>done</label></li>
+                            <li><label><input type="radio" name="todo-list" value="all" defaultChecked ={ this.state.filterType} onChange={(e) => this.selectFilter(e)}/>all</label></li>
+                            <li><label><input type="radio" name="todo-list" value="todo" onChange={(e) => this.selectFilter(e)}/>todo</label></li>
+                            <li><label><input type="radio" name="todo-list" value="done" onChange={(e) => this.selectFilter(e)}/>done</label></li>
                         </ul>
                         <div className="lists-wrap">
                             <ul>

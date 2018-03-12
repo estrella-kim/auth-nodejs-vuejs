@@ -12,16 +12,13 @@ const authModel = {
         return connection.query('SELECT *  FROM todos WHERE `index`=?', req, callback);
     },
     insertLists : function(req, callback) {
-        let arr = [ req.text, req.status];
-        return connection.query( 'insert into todos(todo, isDone) values(?,?)', arr, callback);
+        return connection.query( 'insert into todos(todo, isDone) values(?,?)', req, callback);
     },
-    updateLists : function(req, callback) {
-        if(req.text) {
-            let arr = [req.text, req.index];
-            return connection.query('update todos set todo = ? where `index` = ?' , arr , callback);
-        }
-        let arr = [req.status, req.index];
-        return connection.query('update todos set isDone = ? where `index` = ?' , arr , callback);
+    updateListStatus : function(req, callback) {
+        return connection.query('update todos set isDone = ? where `index` = ?' , req , callback);
+    },
+    updateTodoLists : function(req, callback) {
+        return connection.query('update todos set todo = ? where `index` = ?' , req , callback);
     },
     deleteLists : function(req, callback) {
         return connection.query('delete from todos where `index` = ?', req.index, callback );
