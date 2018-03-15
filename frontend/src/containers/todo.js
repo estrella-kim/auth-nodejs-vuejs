@@ -19,7 +19,8 @@ export class Todo extends React.Component{
         this.state = {
             text : '',
             lists : this.lists,
-            filterType : 'all'
+            filterType : 'all',
+            editValue : false
         }
     }
     componentDidMount () {
@@ -33,7 +34,8 @@ export class Todo extends React.Component{
                 const list = {
                     index : value.index,
                     text : value.todo,
-                    status : value.isDone
+                    status : value.isDone,
+                    editValue : false
                 }
                 arr.push(list);
             });
@@ -55,12 +57,19 @@ export class Todo extends React.Component{
             editValue : false
         };
         registerTodoLists(param, function(res){
-            console.log(res);
-            /*_this.lists.push(param);*/
+            console.log(res)
+            let registeredList = {
+                index : res.data.response.insertId,
+                text : param.text,
+                status : 0
+            }
+            let presentLists = _this.state.lists;
+            presentLists.push(registeredList);
             _this.setState({
-                text : ''
+                text : '',
+                lists : presentLists
             });
-            _this.getLists();
+            _this.doFilter();
         });
     }
     selectFilter (e) {
@@ -129,29 +138,36 @@ export class Todo extends React.Component{
             _this.doFilter();
         });
     }
-    edit(index) {
-        this.lists[index].editValue = !this.lists[index].editValue;
+    edit(value, index) {
+        let wholeLists = this.state.lists;
+        wholeLists[index].editValue = !value.editValue;
+       // this.lists[index].editValue = !this.lists[index].editValue;
         this.setState({
-            lists : this.lists
+            lists : wholeLists
         })
     }
     editText(event, index) {
-        this.lists[index].text = event.target.value;
+        let wholeLists = this.state.lists;
+        wholeLists[index].text = event.target.value;
+        //this.lists[index].text = event.target.value;
         this.setState({
-            lists : this.lists
+            lists : wholeLists
         })
     }
-    registerEdited(event, list) {
+    registerEdited(event, list, index) {
         const _this = this;
         event.preventDefault();
-        updateTodoLists( { index : list.index, text : list.text }, function(res){
+        let param = {
+            index : list.index,
+            text : list.text
+        };
+        updateTodoLists( param, function(res){
             console.log(res);
-            list.editValue = false;
-            if(_this.filterType !== 'done') {
-                _this.setState({
-                    lists: _this.lists
-                })
-            }
+            let presentLists = _this.state.lists;
+            presentLists[index].editValue = false;
+            _this.setState({
+                lists : presentLists
+            })
         });
     }
     render () {
@@ -174,8 +190,8 @@ export class Todo extends React.Component{
                                 { this.state.lists.map((v, i) => (
                                     <li key={i}>
                                         <Checkbox checked={v.status} onChange={ () => this.changeStatus(v, i) }></Checkbox>
-                                        { v.editValue ? (<form className="edit-wrap" onSubmit={(e) => this.registerEdited(e, v)}><Input value={v.text} size="small" onBlur={ () => this.edit(i) } onChange={(e) => this.editText(e, i)} /></form>)
-                                            : (<span onDoubleClick={ () => this.edit(i)}>{v.index}{v.text}</span>) }
+                                        { v.editValue ? (<form className="edit-wrap" onSubmit={(e) => this.registerEdited(e, v, i)}><Input value={v.text} size="small" onBlur={ () => this.edit(v, i) } onChange={(e) => this.editText(e, i)} /></form>)
+                                            : (<span onDoubleClick={ () => this.edit(v, i)}>{v.index}{v.text}</span>) }
                                         <Icon type="close" onClick={ () => this.delete(v, i)}/>
                                     </li>)
                                 )}
