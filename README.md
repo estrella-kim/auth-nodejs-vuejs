@@ -1,4 +1,4 @@
-# Authentication App  [![Build Status](https://travis-ci.org/estrella-kim/react-todo.svg?branch=master)](https://travis-ci.org/estrella-kim/react-todo)
+# Todo App  [![Build Status](https://travis-ci.org/estrella-kim/react-todo.svg?branch=master)](https://travis-ci.org/estrella-kim/react-todo)
 
 ## Features
 
