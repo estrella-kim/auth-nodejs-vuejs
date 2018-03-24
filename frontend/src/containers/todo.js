@@ -2,15 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 //import { Provider } from 'react-redux';
 //import { createStore } from 'redux';
-import { fetchTodoLists, registerTodoLists, deleteTodoLists, updateTodoLists } from '../api';
-import axios from 'axios';
-import { TodoList } from '../components';
+import { fetchTodoLists, addTodoLists, deleteTodoLists, updateTodoLists } from '../api';
+//import { TodoList } from '../components';
 import { Checkbox, Icon, Input } from 'antd';
 import 'antd/dist/antd.css';
 import './todo.css';
-
-
-const $http = axios;
 
 export class Todo extends React.Component{
     constructor () {
@@ -28,22 +24,23 @@ export class Todo extends React.Component{
     }
     getLists () {
         let _this = this;
-        fetchTodoLists(function (res) {
-            let arr = [];
-            res.data.response.forEach(function (value, index) {
-                const list = {
-                    index : value.index,
-                    text : value.todo,
-                    status : value.isDone,
-                    editValue : false
-                }
-                arr.push(list);
+        fetchTodoLists()
+            .then(res => {
+                let arr = [];
+                res.data.response.forEach(function (value, index) {
+                    const list = {
+                        index: value.index,
+                        text: value.todo,
+                        status: value.isDone,
+                        editValue: false
+                    };
+                    arr.push(list);
+                });
+                _this.lists = arr;
+                _this.setState({
+                    lists: _this.lists
+                });
             });
-            _this.lists = arr;
-            _this.setState({
-                lists : _this.lists
-            })
-        })
     }
     registerList (e) {
         const _this = this;
@@ -56,13 +53,13 @@ export class Todo extends React.Component{
             status : 0,
             editValue : false
         };
-        registerTodoLists(param, function(res){
-            console.log(res)
+        addTodoLists(param)
+            .then(res => {
             let registeredList = {
                 index : res.data.response.insertId,
                 text : param.text,
                 status : 0
-            }
+            };
             let presentLists = _this.state.lists;
             presentLists.push(registeredList);
             _this.setState({
@@ -82,7 +79,7 @@ export class Todo extends React.Component{
             if(value.status === filterType) {
                 arr.push(value);
             }
-        })
+        });
         this.setState({
             lists : arr
         })
@@ -115,8 +112,8 @@ export class Todo extends React.Component{
         param.status = list.status;
         arr[index].status = list.status;
 
-        updateTodoLists( param, function(res){
-            console.log(res);
+        updateTodoLists(param)
+            .then(res => {
             this.setState({
                 lists : arr
             });
@@ -130,7 +127,8 @@ export class Todo extends React.Component{
         this.lists.splice(index, 1);
         console.log(list.index);
         console.log( this.lists);
-        deleteTodoLists( {params: {index: list.index}}, function(res){
+        deleteTodoLists( {params: {index: list.index}})
+            .then(res => {
             console.log(res);
             _this.setState({
                 lists : _this.lists
@@ -161,7 +159,8 @@ export class Todo extends React.Component{
             index : list.index,
             text : list.text
         };
-        updateTodoLists( param, function(res){
+        updateTodoLists( param)
+            .then(res => {
             console.log(res);
             let presentLists = _this.state.lists;
             presentLists[index].editValue = false;

@@ -1,4 +1,17 @@
-export { default as fetchTodoLists } from './fetchTodoLists';
-export { default as updateTodoLists } from './updateTodoLists';
-export { default as deleteTodoLists } from './deleteTodoLists';
-export { default as registerTodoLists } from './registerTodoLists';
+import $http from './api_core';
+
+export function fetchTodoLists () {
+    return  $http.get('/todo');
+}
+
+export function updateTodoLists(param){
+    return $http.post('/todo', param);
+}
+
+export function deleteTodoLists(param) {
+    return $http.delete('/todo', param)
+}
+
+export function addTodoLists(param) {
+    return $http.put('/todo', param);
+}
