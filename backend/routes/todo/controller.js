@@ -28,7 +28,7 @@ exports.getListsByIndex = (req, res) => {
     })
 }
 exports.insertLists = (req, res, next) => {
-	let param = [ req.body.text, req.body.status];
+	let param = [ req.body.text, req.body.isDone];
     todoModels.insertLists(param, function(error, results) {
 		let responseObj = {
 			"status" : 200,
@@ -56,8 +56,8 @@ exports.updateLists = (req, res) => {
             res.send(JSON.stringify(responseObj));
         })
 	}
-	if(req.body.status) {
-        let param = [req.body.status, req.body.index];
+	if(req.body.isDone) {
+        let param = [req.body.isDone, req.body.index];
         todoModels.updateListStatus(param, function(error, results) {
             let responseObj = {
                 "status" : 200,

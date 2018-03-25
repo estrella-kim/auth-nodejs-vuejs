@@ -26,17 +26,8 @@ export class Todo extends React.Component{
         let _this = this;
         fetchTodoLists()
             .then(res => {
-                let arr = [];
-                res.data.response.forEach(function (value, index) {
-                    const list = {
-                        index: value.index,
-                        text: value.todo,
-                        status: value.isDone,
-                        editValue: false
-                    };
-                    arr.push(list);
-                });
-                _this.lists = arr;
+                _this.lists =  res.data.response;
+
                 _this.setState({
                     lists: _this.lists
                 });
@@ -50,21 +41,22 @@ export class Todo extends React.Component{
         }
         const param = {
             text : this.state.text,
-            status : 0,
-            editValue : false
+            isDone : 0
         };
+        console.log(param)
         addTodoLists(param)
             .then(res => {
             let registeredList = {
                 index : res.data.response.insertId,
                 text : param.text,
-                status : 0
+                isDone : 0
             };
-            let presentLists = _this.state.lists;
-            presentLists.push(registeredList);
             _this.setState({
                 text : '',
-                lists : presentLists
+                lists : _this.state.lists.push(registeredList)
+            })
+            .error( res => {
+                console.log(res)
             });
             _this.doFilter();
         });
@@ -76,7 +68,7 @@ export class Todo extends React.Component{
     updateState (filterType) {
         const arr = [];
         this.lists.forEach(function(value){
-            if(value.status === filterType) {
+            if(value.isDone === filterType) {
                 arr.push(value);
             }
         });
@@ -108,9 +100,9 @@ export class Todo extends React.Component{
     changeStatus (list, index) {
         const param = { index : list.index };
         let arr = this.state.lists;
-        list.status = list.status === 1 ? 0 : 1;
-        param.status = list.status;
-        arr[index].status = list.status;
+        list.isDone = list.isDone === 1 ? 0 : 1;
+        param.isDone = list.isDone;
+        arr[index].isDone = list.isDone;
 
         updateTodoLists(param)
             .then(res => {
@@ -139,7 +131,6 @@ export class Todo extends React.Component{
     edit(value, index) {
         let wholeLists = this.state.lists;
         wholeLists[index].editValue = !value.editValue;
-       // this.lists[index].editValue = !this.lists[index].editValue;
         this.setState({
             lists : wholeLists
         })
@@ -188,7 +179,7 @@ export class Todo extends React.Component{
                             <ul>
                                 { this.state.lists.map((v, i) => (
                                     <li key={i}>
-                                        <Checkbox checked={v.status} onChange={ () => this.changeStatus(v, i) }></Checkbox>
+                                        <Checkbox checked={v.isDone} onChange={ () => this.changeStatus(v, i) }></Checkbox>
                                         { v.editValue ? (<form className="edit-wrap" onSubmit={(e) => this.registerEdited(e, v, i)}><Input value={v.text} size="small" onBlur={ () => this.edit(v, i) } onChange={(e) => this.editText(e, i)} /></form>)
                                             : (<span onDoubleClick={ () => this.edit(v, i)}>{v.index}{v.text}</span>) }
                                         <Icon type="close" onClick={ () => this.delete(v, i)}/>

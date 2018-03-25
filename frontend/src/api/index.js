@@ -5,7 +5,7 @@ export function fetchTodoLists () {
 }
 
 export function updateTodoLists(param){
-    return $http.post('/todo', param);
+    return $http.put('/todo', param);
 }
 
 export function deleteTodoLists(param) {
@@ -13,5 +13,5 @@ export function deleteTodoLists(param) {
 }
 
 export function addTodoLists(param) {
-    return $http.put('/todo', param);
+    return $http.post('/todo', param);
 }
