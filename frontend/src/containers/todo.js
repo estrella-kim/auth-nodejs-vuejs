@@ -46,20 +46,19 @@ export class Todo extends React.Component{
         console.log(param)
         addTodoLists(param)
             .then(res => {
-            let registeredList = {
-                index : res.data.response.insertId,
-                text : param.text,
-                isDone : 0
-            };
-            _this.setState({
-                text : '',
-                lists : _this.state.lists.push(registeredList)
-            })
-            .error( res => {
-                console.log(res)
+                let registeredList = {
+                    index: res.data.response.insertId,
+                    todo: param.text,
+                    isDone: 0
+                };
+                _this.state.lists.push(registeredList);
+                console.log(_this.state.lists)
+                _this.setState({
+                    text: '',
+                    lists: _this.state.lists
+                })
             });
-            _this.doFilter();
-        });
+        _this.doFilter();
     }
     selectFilter (e) {
         this.state.filterType = e.target.value;
@@ -137,7 +136,7 @@ export class Todo extends React.Component{
     }
     editText(event, index) {
         let wholeLists = this.state.lists;
-        wholeLists[index].text = event.target.value;
+        wholeLists[index].todo = event.target.value;
         //this.lists[index].text = event.target.value;
         this.setState({
             lists : wholeLists
@@ -148,7 +147,7 @@ export class Todo extends React.Component{
         event.preventDefault();
         let param = {
             index : list.index,
-            text : list.text
+            text : list.todo
         };
         updateTodoLists( param)
             .then(res => {
@@ -180,8 +179,8 @@ export class Todo extends React.Component{
                                 { this.state.lists.map((v, i) => (
                                     <li key={i}>
                                         <Checkbox checked={v.isDone} onChange={ () => this.changeStatus(v, i) }></Checkbox>
-                                        { v.editValue ? (<form className="edit-wrap" onSubmit={(e) => this.registerEdited(e, v, i)}><Input value={v.text} size="small" onBlur={ () => this.edit(v, i) } onChange={(e) => this.editText(e, i)} /></form>)
-                                            : (<span onDoubleClick={ () => this.edit(v, i)}>{v.index}{v.text}</span>) }
+                                        { v.editValue ? (<form className="edit-wrap" onSubmit={(e) => this.registerEdited(e, v, i)}><Input value={v.todo} size="small" onBlur={ () => this.edit(v, i) } onChange={(e) => this.editText(e, i)} /></form>)
+                                            : (<span onDoubleClick={ () => this.edit(v, i)}>{v.index}{v.todo}</span>) }
                                         <Icon type="close" onClick={ () => this.delete(v, i)}/>
                                     </li>)
                                 )}
